@@ -73,9 +73,9 @@ func NewPopulation(nb int, bounds pixel.Rect) *Population {
 	pop := new(Population)
 	pop.size = nb
 	pop.bounds = bounds
-	pop.radius = 4
-	pop.speed = 50. // in pixel per second
-	pop.transProb = 0.4
+	pop.radius = 20
+	pop.speed = 100. // in pixel per second
+	pop.transProb = 0.8
 	pop.running = true
 	pop.last = time.Now()
 
