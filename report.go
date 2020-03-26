@@ -3,14 +3,11 @@ package main
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
-	"github.com/faiface/pixel/pixelgl"
-	"golang.org/x/image/colornames"
 )
 
 // ReportWindow is a window that can display a graph of datapoints.
 type ReportWindow struct {
 	bounds pixel.Rect
-	win    *pixelgl.Window
 	imd    *imdraw.IMDraw
 	err    error
 	stats  []stat
@@ -25,13 +22,8 @@ type stat struct {
 // NewReportWindow constructor.
 func NewReportWindow() *ReportWindow {
 	rw := new(ReportWindow)
-	rw.bounds = pixel.R(0, 0, 1000, 600)
-	rw.win, rw.err = pixelgl.NewWindow(pixelgl.WindowConfig{Bounds: rw.bounds})
-	if rw.err != nil {
-		panic(rw.err)
-	}
+	rw.bounds = pixel.R(0, 0, 1024, 500)
 	rw.imd = imdraw.New(nil)
-	rw.win.Clear(colornames.Lightgray)
 	rw.stats = make([]stat, 0, 100)
 	return rw
 }
@@ -45,7 +37,8 @@ func (rw *ReportWindow) Record(s stat) {
 // Prepare the report by drawing on the imd object.
 func (rw *ReportWindow) prepareReport() {
 
-	var v pixel.Vec
+	var v = rw.bounds.Min
+
 	for _, stat := range rw.stats {
 
 		rw.imd.Color = StateColor(StateLive)
@@ -73,19 +66,6 @@ func (rw *ReportWindow) prepareReport() {
 		rw.imd.Line(5)
 
 		v.X += 5
-		v.Y = 0
+		v.Y = rw.bounds.Min.Y
 	}
-}
-
-// Update the window
-func (rw *ReportWindow) Update() {
-	rw.win.Clear(colornames.Beige)
-	rw.imd.Draw(rw.win)
-	// Always keep updating to stay responsive
-	rw.win.Update()
-}
-
-// Closed test for close request
-func (rw *ReportWindow) Closed() bool {
-	return rw.win.Closed()
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
@@ -23,10 +22,12 @@ func NewMWindow() *MWindow {
 
 	mw := new(MWindow)
 
+	mw.pop = NewPopulation().Seed(1)
+
 	cfg := pixelgl.WindowConfig{
 		Title:  "Animation",
-		Bounds: pixel.R(0, 0, 1024, 768),
-		//VSync:  true,
+		Bounds: mw.pop.bounds,
+		VSync:  true,
 	}
 
 	// create the window
@@ -37,7 +38,7 @@ func NewMWindow() *MWindow {
 
 	// Prepare population window
 	mw.win.SetSmooth(true)
-	mw.pop = NewPopulation(mw.win.Bounds()).Seed(1)
+
 	mw.imd = imdraw.New(nil)
 
 	mw.rwin = NewReportWindow()
@@ -47,7 +48,7 @@ func NewMWindow() *MWindow {
 
 //Closed wrapper
 func (mw *MWindow) Closed() bool {
-	return mw.win.Closed() || mw.rwin.Closed()
+	return mw.win.Closed()
 }
 
 // Update loop
@@ -61,6 +62,8 @@ func (mw *MWindow) Update() {
 		mw.pop.Draw(mw.imd)
 
 		mw.win.Clear(colornames.Skyblue)
+
+		mw.rwin.imd.Draw(mw.win)
 		mw.imd.Draw(mw.win)
 		mw.fpsDisplay()
 
@@ -73,7 +76,6 @@ func (mw *MWindow) Update() {
 
 	// Update in anycase, to stay responsive
 	mw.win.Update()
-	mw.rwin.Update()
 }
 
 // fpsDisplay dispaly the FPS in the title bar,

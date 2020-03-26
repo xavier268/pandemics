@@ -70,14 +70,14 @@ type Population struct {
 }
 
 // NewPopulation generates a new population of the provided size.
-func NewPopulation(bounds pixel.Rect) *Population {
+func NewPopulation() *Population {
 
 	pop := new(Population)
 	pop.size = 200
-	pop.bounds = bounds
-	pop.radius = 8
-	pop.speed = 150.  // in pixel per second
-	pop.transProb = 3 // probability to transfer, per second
+	pop.bounds = pixel.R(0, 0, 1200, 800)
+	pop.radius = 10
+	pop.speed = 80.   // in pixel per second
+	pop.transProb = 2 // probability to transfer, per second
 	pop.running = true
 	pop.last = time.Now()
 	pop.curedProb, pop.deathProb = 0.096, 0.004
@@ -87,8 +87,8 @@ func NewPopulation(bounds pixel.Rect) *Population {
 		p.ID = i
 		p.State = StateLive
 		pop.count[StateLive]++
-		p.Position.X = bounds.Min.X + (bounds.Size().X-1)*rand.Float64()
-		p.Position.Y = bounds.Min.Y + (bounds.Size().Y-1)*rand.Float64()
+		p.Position.X = pop.bounds.Min.X + (pop.bounds.Size().X-1)*rand.Float64()
+		p.Position.Y = pop.bounds.Min.Y + (pop.bounds.Size().Y-1)*rand.Float64()
 		p.Speed.X = pop.speed * (2.*rand.Float64() - 1.)
 		p.Speed.Y = pop.speed * (2.*rand.Float64() - 1.)
 		pop.people = append(pop.people, p)
@@ -121,6 +121,9 @@ func (pop Population) Draw(imd *imdraw.IMDraw) {
 		imd.Color = StateColor(p.State)
 		imd.Push(p.Position)
 		imd.Circle(pop.radius, 0) // radius, thickness
+		imd.Color = colornames.Black
+		imd.Push(p.Position)
+		imd.Circle(pop.radius, 1) // black border
 	}
 }
 
