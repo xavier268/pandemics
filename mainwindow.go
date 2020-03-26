@@ -11,11 +11,11 @@ import (
 
 // MWindow object
 type MWindow struct {
-	win *pixelgl.Window
-	imd *imdraw.IMDraw
-	pop *Population
-	err error
-	//rwin *ReportWindow
+	win  *pixelgl.Window
+	imd  *imdraw.IMDraw
+	pop  *Population
+	err  error
+	rwin *ReportWindow
 }
 
 // NewMWindow constructor
@@ -26,7 +26,7 @@ func NewMWindow() *MWindow {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Animation",
 		Bounds: pixel.R(0, 0, 1024, 768),
-		VSync:  true,
+		//VSync:  true,
 	}
 
 	// create the window
@@ -40,12 +40,14 @@ func NewMWindow() *MWindow {
 	mw.pop = NewPopulation(mw.win.Bounds()).Seed(1)
 	mw.imd = imdraw.New(nil)
 
+	mw.rwin = NewReportWindow()
+
 	return mw
 }
 
 //Closed wrapper
 func (mw *MWindow) Closed() bool {
-	return mw.win.Closed()
+	return mw.win.Closed() || mw.rwin.Closed()
 }
 
 // Update loop
@@ -71,6 +73,7 @@ func (mw *MWindow) Update() {
 
 	// Update in anycase, to stay responsive
 	mw.win.Update()
+	mw.rwin.Update()
 }
 
 // fpsDisplay dispaly the FPS in the title bar,
@@ -88,6 +91,14 @@ func (mw *MWindow) fpsDisplay() {
 			mw.pop.count[StateDead], float64(100*mw.pop.count[StateDead])/float64(mw.pop.size)))
 		mw.pop.frames = 0
 		mw.pop.elapsed++
+
+		mw.rwin.Record(stat{
+			time:    mw.pop.elapsed,
+			live:    mw.pop.count[StateLive],
+			dead:    mw.pop.count[StateDead],
+			touched: mw.pop.count[StateTouched],
+			cured:   mw.pop.count[StateCured],
+		})
 	default:
 		mw.pop.frames++
 	}

@@ -73,11 +73,11 @@ type Population struct {
 func NewPopulation(bounds pixel.Rect) *Population {
 
 	pop := new(Population)
-	pop.size = 500
+	pop.size = 200
 	pop.bounds = bounds
-	pop.radius = 6
-	pop.speed = 200.  // in pixel per second
-	pop.transProb = 1 // probability to transfer, per second
+	pop.radius = 8
+	pop.speed = 150.  // in pixel per second
+	pop.transProb = 3 // probability to transfer, per second
 	pop.running = true
 	pop.last = time.Now()
 	pop.curedProb, pop.deathProb = 0.096, 0.004

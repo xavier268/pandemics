@@ -13,17 +13,10 @@ func main() {
 // run is where all the code will be fired from.
 func run() {
 
-	// prepare report window
-	rwin := NewReportWindow()
-
 	// prepare main window
 	mwin := NewMWindow()
 
-	for !mwin.Closed() && !rwin.Closed() {
-		// Update should be called in the same order
-		// as the windows were declared
-		rwin.Update()
+	for !mwin.Closed() {
 		mwin.Update()
-
 	}
 }
