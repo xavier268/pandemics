@@ -18,13 +18,12 @@ func run() {
 
 	// prepare main window
 	mwin := NewMWindow()
-	mwin2 := NewMWindow()
 
-	for !mwin.Closed() && !mwin2.Closed() && !rwin.Closed() {
+	for !mwin.Closed() && !rwin.Closed() {
 		// Update should be called in the same order
 		// as the windows were declared
 		rwin.Update()
 		mwin.Update()
-		mwin2.Update()
+
 	}
 }

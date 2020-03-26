@@ -13,6 +13,13 @@ type ReportWindow struct {
 	win    *pixelgl.Window
 	imd    *imdraw.IMDraw
 	err    error
+	stats  []stat
+}
+
+// stat record at a given time
+type stat struct {
+	time                       int
+	live, dead, touched, cured int
 }
 
 // NewReportWindow constructor.
@@ -25,15 +32,19 @@ func NewReportWindow() *ReportWindow {
 	}
 	rw.imd = imdraw.New(nil)
 	rw.win.Clear(colornames.Lightgray)
+	rw.stats = make([]stat, 0, 100)
 	return rw
+}
+
+// Record a new data point
+func (rw *ReportWindow) Record(s stat) {
+	rw.stats = append(rw.stats, s)
 }
 
 // Update the window
 func (rw *ReportWindow) Update() {
-
 	rw.win.Clear(colornames.Beige)
 	rw.imd.Draw(rw.win)
-
 	// Always keep updateting to stay responsive
 	rw.win.Update()
 }

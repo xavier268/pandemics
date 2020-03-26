@@ -65,21 +65,24 @@ type Population struct {
 	transProb float64          // transmission probability per second of contact
 	last      time.Time        // last update cycle
 	dt        float64          // delta time
+	deathProb float64          // probability to die, per second
+	curedProb float64          // probablity to be cured, per second
 }
 
 // NewPopulation generates a new population of the provided size.
-func NewPopulation(nb int, bounds pixel.Rect) *Population {
+func NewPopulation(bounds pixel.Rect) *Population {
 
 	pop := new(Population)
-	pop.size = nb
+	pop.size = 500
 	pop.bounds = bounds
-	pop.radius = 20
-	pop.speed = 100. // in pixel per second
-	pop.transProb = 0.8
+	pop.radius = 6
+	pop.speed = 200.  // in pixel per second
+	pop.transProb = 1 // probability to transfer, per second
 	pop.running = true
 	pop.last = time.Now()
+	pop.curedProb, pop.deathProb = 0.096, 0.004
 
-	for i := 0; i < nb; i++ {
+	for i := 0; i < pop.size; i++ {
 		p := new(Person)
 		p.ID = i
 		p.State = StateLive
@@ -101,7 +104,7 @@ func (pop *Population) DeltaTimeCompute() {
 	pop.last = time.Now()
 }
 
-// Seed the population with some infeted cases
+// Seed the population with some infected cases
 func (pop *Population) Seed(nbinfected int) *Population {
 	for i := 0; i < pop.size && i < nbinfected; i++ {
 		pop.people[i].State = StateTouched
@@ -126,9 +129,22 @@ func (pop Population) Draw(imd *imdraw.IMDraw) {
 func (pop *Population) Update() {
 
 	for _, p := range pop.people {
-		p.Position.X = p.Position.X + p.Speed.X*pop.dt
-		p.Position.Y = p.Position.Y + p.Speed.Y*pop.dt
-		pop.Reframe(p)
+
+		if p.State == StateTouched && rand.Float64() < pop.dt*pop.deathProb {
+			pop.count[StateTouched]--
+			pop.count[StateDead]++
+			p.State = StateDead
+		}
+		if p.State == StateTouched && rand.Float64() < pop.dt*pop.curedProb {
+			pop.count[StateTouched]--
+			pop.count[StateCured]++
+			p.State = StateCured
+		}
+		if p.State != StateDead {
+			p.Position.X = p.Position.X + p.Speed.X*pop.dt
+			p.Position.Y = p.Position.Y + p.Speed.Y*pop.dt
+			pop.Reframe(p)
+		}
 	}
 }
 

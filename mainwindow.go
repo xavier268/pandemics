@@ -15,6 +15,7 @@ type MWindow struct {
 	imd *imdraw.IMDraw
 	pop *Population
 	err error
+	//rwin *ReportWindow
 }
 
 // NewMWindow constructor
@@ -36,7 +37,7 @@ func NewMWindow() *MWindow {
 
 	// Prepare population window
 	mw.win.SetSmooth(true)
-	mw.pop = NewPopulation(100, mw.win.Bounds()).Seed(1)
+	mw.pop = NewPopulation(mw.win.Bounds()).Seed(1)
 	mw.imd = imdraw.New(nil)
 
 	return mw
@@ -64,7 +65,7 @@ func (mw *MWindow) Update() {
 	}
 
 	// should we stop running ?
-	if mw.pop.running && mw.pop.count[StateLive] <= 0 {
+	if mw.pop.running && mw.pop.count[StateTouched] <= 0 {
 		mw.pop.running = false
 	}
 
@@ -78,13 +79,13 @@ func (mw *MWindow) fpsDisplay() {
 	// counting FPS and displaying in title
 	select {
 	case <-mw.pop.second:
-		mw.win.SetTitle(fmt.Sprintf("Time %ds, FPS: %d - Live %d, Touched %d, Cured %d, Dead %d",
+		mw.win.SetTitle(fmt.Sprintf("Time %ds, FPS: %d - Live %d(%.1f%%), Touched %d(%.1f%%), Cured %d(%.1f%%), Dead %d(%.1f%%)",
 			mw.pop.elapsed,
 			mw.pop.frames,
-			mw.pop.count[StateLive],
-			mw.pop.count[StateTouched],
-			mw.pop.count[StateCured],
-			mw.pop.count[StateDead]))
+			mw.pop.count[StateLive], float64(100*mw.pop.count[StateLive])/float64(mw.pop.size),
+			mw.pop.count[StateTouched], float64(100*mw.pop.count[StateTouched])/float64(mw.pop.size),
+			mw.pop.count[StateCured], float64(100*mw.pop.count[StateCured])/float64(mw.pop.size),
+			mw.pop.count[StateDead], float64(100*mw.pop.count[StateDead])/float64(mw.pop.size)))
 		mw.pop.frames = 0
 		mw.pop.elapsed++
 	default:
