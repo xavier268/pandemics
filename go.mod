@@ -1,4 +1,4 @@
-module github.com/xavier268/animation
+module github.com/xavier268/pandemics
 
 go 1.13
 

@@ -1,5 +1,6 @@
-# animation
-A test of video animation using Pixel golang librairy
+# Pandemics
+A test of video animation using Pixel golang librairy.
+Simulating virus propagation.
 
 ## prequisite
 
